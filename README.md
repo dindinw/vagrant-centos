@@ -1,3 +1,9 @@
+Add auto download 
+
+The 6.5 minimal download link:
+http://mirrors.sohu.com/centos/6.5/isos/x86_64/CentOS-6.5-x86_64-minimal.iso
+
+
 vagrant-centos
 ==============
 
