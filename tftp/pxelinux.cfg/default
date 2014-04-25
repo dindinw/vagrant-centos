@@ -1,0 +1,4 @@
+default centos-6
+LABEL centos-6 
+    KERNEL /centos-6/images/pxeboot/vmlinuz
+    APPEND initrd=/centos-6/images/pxeboot/initrd.img ks=http://10.0.2.3:8088

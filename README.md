@@ -9,6 +9,8 @@ TODOs
 The 6.5 minimal download link:
 http://mirrors.sohu.com/centos/6.5/isos/x86_64/CentOS-6.5-x86_64-minimal.iso
 
+The md5sum of 4.3.10 additions
+`1c5ff3a2cc9ff615aa79788c5e771fdc *VBoxGuestAdditions_4.3.10.iso`
 
 vagrant-centos
 ==============

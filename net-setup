@@ -2,16 +2,37 @@
 
 . ./vars.sh
 
+echo ${VBOX_TFTP}
+
+#VBoxManage controlvm ${NAME} poweroff
+
+#VBoxManage unregistervm ${NAME} --delete
+
+imdisk -l -m "${VBOX_TFTP}/centos-6" 2>&1|grep "^Not" >/dev/null
+
+if [[ $? -eq 0 ]]; then 
+    imdisk -a -f "${INSTALLER}" -m "${VBOX_TFTP}/centos-6"
+fi
+
+# Start TFTPD32
+start tftpd32.exe -i tftpd32.ini
+tftpd_pid=$(tasklist|grep tftpd32.exe|awk '{print $2}')
+echo the tftpd job is started with pid=$pid
+
 VBoxManage createvm --name ${NAME} --ostype ${TYPE} --register
 
+# Type includes :  [--nictype<1-N> Am79C970A|Am79C973|82540EM|82543GC|82545EM|virtio]
+#     
 VBoxManage modifyvm ${NAME} \
     --vram 12 \
     --accelerate3d off \
     --memory 613 \
     --usb off \
     --audio none \
-    --boot1 disk --boot2 dvd --boot3 none --boot4 none \
-    --nictype1 virtio --nic1 nat --natnet1 "${NATNET}" \
+    --boot1 disk --boot2 net --boot3 none --boot4 none \
+    --nictype1 Am79C973 --nic1 nat --natnet1 "${NATNET}" \
+    --nattftpfile1 pxelinux.0 \
+    --nattftpserver1 10.0.2.2 \
     --nictype2 virtio \
     --nictype3 virtio \
     --nictype4 virtio \
@@ -49,6 +70,9 @@ IP=`echo ${NATNET} | sed -nE 's/^([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}).*/\1/p'`
 echo 'At the boot prompt, hit <TAB> and then type:'
 echo " ks=http://${IP}.3:8088"
 sh ./httpd.sh | nc -l -p 8088 >/dev/null
+
+taskkill //PID $tftpd_pid
+imdisk -d -m "${VBOX_TFTP}/centos-6"
 
 echo "The box has accepted the kickstart file. It will now go through"
 echo "a lengthy install. When it is finished it will shutdown and you"
